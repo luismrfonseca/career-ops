@@ -1,0 +1,16 @@
+!cv.md
+!config/profile.yml
+!portals.yml
+!modes/_profile.md
+!data/applications.md
+!data/pipeline.md
+!data/scan-history.tsv
+!reports/*.md
+!output/*
+!batch/logs/*
+!batch/batch-state.tsv
+!batch/batch-input.tsv
+!batch/tracker-additions/**/*.tsv
+!jds/*
+!.env
+.maestro-protocols

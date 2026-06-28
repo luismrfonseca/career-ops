@@ -26,6 +26,31 @@ Process multiple job offers in parallel via headless workers. Each worker runs t
 
 4. **Results** are automatically merged into `data/applications.md` and verified with `verify-pipeline.mjs` at the end of the run.
 
+## Pipeline Automation (Headless)
+
+The `batch/run-pipeline.sh` script automates the evaluation of URLs directly from `data/pipeline.md`. It extracts all unchecked items from the "Pendientes" section and processes them sequentially.
+
+### How to Run
+
+1. **Dry Run**: Preview the commands that would be executed without actually running them:
+   ```bash
+   bash batch/run-pipeline.sh --dry-run
+   ```
+
+2. **Background Execution**: Run the pipeline in the background (recommended for long lists):
+   ```bash
+   nohup bash batch/run-pipeline.sh > batch/logs/batch-run.log 2>&1 &
+   ```
+
+### Logging & Monitoring
+
+- **Audit Trail**: `batch/logs/batch-run.log` contains the full output of every evaluation.
+- **Failures**: `batch/logs/failed.log` lists URLs that failed to process, allowing for easy identification and manual retry.
+
+### Rate Limiting
+
+The script includes a **5-second sleep interval** between evaluations to respect job board rate limits and prevent API throttling.
+
 ## Options
 
 | Flag | Default | Description |
@@ -40,11 +65,16 @@ Process multiple job offers in parallel via headless workers. Each worker runs t
 
 ```
 batch/
-  batch-runner.sh          # Orchestrator script
+  batch-runner.sh          # Orchestrator script (manual input)
+  run-pipeline.sh          # Pipeline orchestrator (auto-extract)
+  extract-pipeline.mjs     # URL extractor for run-pipeline.sh
   batch-prompt.md          # Prompt template sent to each worker
   batch-input.tsv          # Input offers (you create this)
   batch-state.tsv          # Processing state (auto-managed, resumable)
-  logs/                    # Per-offer worker logs ({report_num}-{id}.log)
+  logs/                    # Logs directory
+    batch-run.log          # Full audit trail for run-pipeline.sh
+    failed.log             # List of failed URLs for run-pipeline.sh
+    {report_num}-{id}.log  # Per-offer worker logs for batch-runner.sh
   tracker-additions/       # TSV lines produced by workers
     merged/                # TSVs already merged into applications.md
 ```
